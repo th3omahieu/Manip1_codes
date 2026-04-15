@@ -19,6 +19,7 @@ def live_view(cam, tempsexp, DXmax=1280, DYmax=1024, Xinmax=0, Yinmax=0):
     # 1. Configuration (Exposition et ROI)
     if cam.ExposureAuto.GetAccessMode() == PySpin.RW:
         cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+    
     cam.ExposureTime.SetValue(tempsexp * 1000)
     if cam.IsStreaming():
         cam.EndAcquisition()

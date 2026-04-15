@@ -15,6 +15,7 @@ def capture(cam, tempsexp, DXmax=1280, DYmax=1024, Xinmax=0, Yinmax=0):
     # 1. Configuration de l'exposition (ms -> µs)
     if cam.ExposureAuto.GetAccessMode() == PySpin.RW:
         cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+
     cam.ExposureTime.SetValue(tempsexp * 1000)
     if cam.IspEnable.GetAccessMode() == PySpin.RW:
         cam.IspEnable.SetValue(False)
@@ -22,6 +23,10 @@ def capture(cam, tempsexp, DXmax=1280, DYmax=1024, Xinmax=0, Yinmax=0):
     # 2. Configuration du ROI (Region of Interest)
     # Note: En PySpin, il faut parfois désactiver l'auto-centrage pour changer le ROI
     if cam.Width.GetAccessMode() == PySpin.RW:
+        if hasattr(cam, 'OffsetAutoCenter') and cam.OffsetAutoCenter.GetAccessMode() == PySpin.RW:
+            cam.OffsetAutoCenter.SetValue(False)
+        cam.OffsetX.SetValue(0)
+        cam.OffsetY.SetValue(0)
         cam.Width.SetValue(DXmax)
         cam.Height.SetValue(DYmax)
         cam.OffsetX.SetValue(Xinmax)
