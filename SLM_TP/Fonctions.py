@@ -86,3 +86,23 @@ def calculCentreContour(Cx, Dx, Cy, Dy, H, M):
     M[y_start:y_end, x_start:x_end] = H_ext.astype(np.uint8)
 
     return M
+
+def PixelSLM_pixversrad_Holoeyenir80(xphi):
+    x2pi = 255
+    xphi = np.array(xphi)
+    xphi = xphi % x2pi
+    
+    px1, py1 = 0, 0
+    px2, py2 = x2pi, 2 * np.pi
+    
+    A1_1 = -3.360671e-05
+    A1_2 = 1.565087e-03
+    
+    pente = (py2 - py1) / (px2 - px1)
+    intercept = py1 - pente * px1
+    
+    # Calcul du modèle polynomial contraint
+    phi = (xphi - px1) * (xphi - px2) * (A1_1 * xphi + A1_2) + (pente * xphi + intercept)
+    
+    # Retourne la phase modulo 2pi
+    return phi % (2 * np.pi)
