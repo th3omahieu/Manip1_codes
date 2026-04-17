@@ -87,22 +87,27 @@ def calculCentreContour(Cx, Dx, Cy, Dy, H, M):
 
     return M
 
-def PixelSLM_pixversrad_Holoeyenir80(xphi):
-    x2pi = 255
-    xphi = np.array(xphi)
-    xphi = xphi % x2pi
-    
+def PixelSLM_pixversrad_Holoeyenir80(xphi, x2pi_val, a1, a2):
+    xphi = np.array(xphi) % x2pi_val
     px1, py1 = 0, 0
-    px2, py2 = x2pi, 2 * np.pi
-    
-    A1_1 = -3.360671e-05
-    A1_2 = 1.565087e-03
+    px2, py2 = x2pi_val, 2 * np.pi
     
     pente = (py2 - py1) / (px2 - px1)
     intercept = py1 - pente * px1
     
-    # Calcul du modèle polynomial contraint
-    phi = (xphi - px1) * (xphi - px2) * (A1_1 * xphi + A1_2) + (pente * xphi + intercept)
+    phi = (xphi - px1) * (xphi - px2) * (a1 * xphi + a2) + (pente * xphi + intercept)
+    return phi 
+
+def PixelSLM_radverspix_Holoeyenir80(phi, x2pi_val, b1, b2):
+    two_pi = 2 * np.pi
+    phi = np.array(phi) % two_pi
     
-    # Retourne la phase modulo 2pi
-    return phi % (2 * np.pi)
+    px1_inv, py1_inv = 0, 0
+    px2_inv, py2_inv = two_pi, x2pi_val
+    
+    pente_inv = (py2_inv - py1_inv) / (px2_inv - px1_inv)
+    intercept_inv = py1_inv - pente_inv * px1_inv
+    
+    pix = (phi - px1_inv) * (phi - px2_inv) * (b1 * phi + b2) + (pente_inv * phi + intercept_inv)
+    
+    return np.clip(pix, 0, 255)
